@@ -132,7 +132,7 @@ module OmniAuth
         verify_access_token!(access_token)
 
         two_hours = 60 * 2
-        
+
         if options.auto_exchange_short_lived_tokens && access_token.expires_in < two_hours
           # going by https://developers.facebook.com/roadmap/offline-access-removal/
           # if you try this with a token that is already long-lived, it will just
@@ -176,6 +176,10 @@ module OmniAuth
       def with_authorization_code!
         if request.params.key?('code')
           yield
+        elsif request.params["access_token"]
+          begin
+            yield
+          end
         elsif code_from_signed_request = signed_request_from_cookie && signed_request_from_cookie['code']
           request.params['code'] = code_from_signed_request
           @authorization_code_from_signed_request_in_cookie = true
