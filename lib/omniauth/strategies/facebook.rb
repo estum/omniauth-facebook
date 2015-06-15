@@ -130,6 +130,23 @@ module OmniAuth
         token_hash = { :access_token => access_token_param }
         access_token = ::OAuth2::AccessToken.from_hash(client, token_hash.update(access_token_options))
         verify_access_token!(access_token)
+
+        two_hours = 60 * 2
+        
+        if options.auto_exchange_short_lived_tokens && access_token.expires_in < two_hours
+          # going by https://developers.facebook.com/roadmap/offline-access-removal/
+          # if you try this with a token that is already long-lived, it will just
+          # return the same token
+          refreshed_token = client.get_token({
+            :client_id => client.id,
+            :client_secret => client.secret,
+            :grant_type => 'fb_exchange_token',
+            :fb_exchange_token => access_token.token
+          }.merge!(token_params.to_hash(:symbolize_keys => true)))
+          refreshed_token.options = access_token.options
+          access_token = refreshed_token
+        end
+
         return access_token
       end
 
