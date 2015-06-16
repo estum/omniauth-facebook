@@ -102,7 +102,7 @@ module OmniAuth
       # For example: /auth/facebook?display=popup
       def authorize_params
         super.tap do |params|
-          %w[display scope auth_type].each do |v|
+          %w[display scope auth_type access_token].each do |v|
             if request.params[v]
               params[v.to_sym] = request.params[v]
             end
@@ -176,7 +176,7 @@ module OmniAuth
       def with_authorization_code!
         if request.params.key?('code')
           yield
-        elsif request.params["access_token"]
+        elsif request.params.key?("access_token")
           begin
             yield
           end
