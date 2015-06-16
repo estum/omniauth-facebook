@@ -85,7 +85,7 @@ module OmniAuth
       #      phase and it must match during the access_token phase:
       #      https://github.com/facebook/facebook-php-sdk/blob/master/src/base_facebook.php#L477
       def callback_url
-        if @authorization_code_from_signed_request_in_cookie
+        if @authorization_code_from_signed_request_in_cookie || request.params.key?("access_token")
           ''
         else
           options[:callback_url] || super
@@ -115,7 +115,7 @@ module OmniAuth
       protected
 
       def build_access_token
-        if request.params["access_token"]
+        if request.params.key?("access_token")
           build_access_token_from_request(request.params["access_token"])
         else
           super.tap do |token|
