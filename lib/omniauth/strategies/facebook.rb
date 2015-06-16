@@ -133,7 +133,7 @@ module OmniAuth
 
         two_hours = 60 * 2
 
-        if options.auto_exchange_short_lived_tokens && access_token.expires_in < two_hours
+        if options.auto_exchange_short_lived_tokens
           # going by https://developers.facebook.com/roadmap/offline-access-removal/
           # if you try this with a token that is already long-lived, it will just
           # return the same token
